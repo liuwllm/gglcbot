@@ -31,9 +31,18 @@ function scheduleMessage(lcQuestions) {
             const channel = client.channels.cache.get(channelId);
 
             const lcQuestion = lcQuestions[questionNo]
+            
+            channel.messages
+                .fetchPinned()
+                .then((pinnedMessages) => {
+                    pinnedMessages.each((msg) => msg.unpin().catch(console.error));
+                })
+                .catch(console.error);
 
             const msgToSend = `<@&${process.env.LC_ROLE_ID}>\nLC Question of the Day:\n\*\*Question\:\*\* ${lcQuestion.name}\n\*\*Difficulty:\*\* ${lcQuestion.difficulty}\n\*\*Link:\*\* ${lcQuestion.link}`;
             channel.send(msgToSend).then((msg) => msg.pin());
+
+            
         },
         null,
         true,
