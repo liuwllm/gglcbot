@@ -4,10 +4,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import NoSuchElementException
 from webdriver_manager.chrome import ChromeDriverManager
 
 options = Options()
-# options.add_argument("--headless")
+options.add_argument("--headless")
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 
@@ -32,7 +33,9 @@ for i in range(len(links)):
     name = " ".join(name)
     name = name.title()
 
-    difficulty = buttons[i].text
+    difficulty = buttons[i].get_attribute('innerHTML')
+    difficulty = difficulty[len('<b _ngcontent-pkm-c41="">'):].rstrip("</b>")
+    print(difficulty)
 
     question = {
         "name": name,
@@ -41,6 +44,8 @@ for i in range(len(links)):
     }
 
     output.append(question)
+
+driver.quit()
 
 with open('lcdb.json', 'w') as json_file:
     json.dump(output, json_file, indent=4)
