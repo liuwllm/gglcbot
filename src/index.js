@@ -1,37 +1,55 @@
 import 'dotenv/config';
 import { Client, Events, GatewayIntentBits } from 'discord.js';
 import { CronJob } from 'cron';
+import fs from 'fs';
 
 const token = process.env.DISCORD_TOKEN;
 
 // Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-
-// When the client is ready, run this code (only once).
-// The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
-// It makes some properties non-nullable.
-client.once(Events.ClientReady, readyClient => {
-	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+const client = new Client({ 
+    intents: [
+        GatewayIntentBits.Guilds,
+    ] 
 });
 
-
-const gcpClient = authorize().then(listEvents);
-
-function scheduleMessage(lcQuestion) {
+function scheduleMessage(lcQuestions) {
     let job = new CronJob(
-        '48 16 * * *', // cron expression that describes when the function below is executed
+        '0 0 7 * * *', // cron expression that describes when the function below is executed
         function() {
-            channel.send(msgToSend); //insert here what you want to do at the given time
+            let num = 0;
+            let questionNo = 0;
+
+            const numData = fs.readFileSync('count.txt', 'utf8');
+
+            num = parseInt(numData, 10);
+            num += 1;
+            questionNo = parseInt(order[num])
+
+            fs.writeFileSync('count.txt', num.toString(), 'utf8');
+
+            const channelId = '1280966321332555938';
+            const channel = client.channels.cache.get(channelId);
+
+            const lcQuestion = lcQuestions[questionNo]
+
+            const msgToSend = `LC Question of the Day:\n\*\*Question\:\*\* ${lcQuestion.name}\n\*\*Difficulty:\*\* ${lcQuestion.difficulty}\n\*\*Link:\*\* ${lcQuestion.link}`;
+            channel.send(msgToSend); 
         },
         null,
         true,
-        'America/Los_Angeles' //insert your server time zone here
+        'America/Toronto' //insert your server time zone here
     );
 }
 
+const lcQuestions = JSON.parse(fs.readFileSync('lcdb.json', 'utf8'));
+console.log(lcQuestions);
+
+const order = JSON.parse(fs.readFileSync('numbers.json', 'utf8'));
+console.log(order);
+
 client.once(Events.ClientReady, c => {
-   console.log('Ready! Logged in as ', c.user.tag);
-   scheduleMessage(element.title, element.readabledate);
+    console.log('Ready! Logged in as', c.user.tag);
+    scheduleMessage(lcQuestions);
 });
 
 // Log in to Discord with your client's token
