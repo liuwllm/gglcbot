@@ -3,4 +3,4 @@ node_modules/
 venv/
 chrome-linux64.zip
 google-chrome-stable_current_amd64.deb
-count.txt
+./count.txt

@@ -33,7 +33,7 @@ function scheduleMessage(lcQuestions) {
             const lcQuestion = lcQuestions[questionNo]
 
             const msgToSend = `<@&${process.env.LC_ROLE_ID}>\nLC Question of the Day:\n\*\*Question\:\*\* ${lcQuestion.name}\n\*\*Difficulty:\*\* ${lcQuestion.difficulty}\n\*\*Link:\*\* ${lcQuestion.link}`;
-            channel.send(msgToSend); 
+            channel.send(msgToSend).then((msg) => msg.pin());
         },
         null,
         true,
