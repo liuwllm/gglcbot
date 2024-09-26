@@ -27,7 +27,7 @@ function scheduleMessage(lcQuestions) {
 
             fs.writeFileSync('count.txt', num.toString(), 'utf8');
 
-            const channelId = '1280966321332555938';
+            const channelId = process.env.LC_CHANNEL_ID;
             const channel = client.channels.cache.get(channelId);
 
             const lcQuestion = lcQuestions[questionNo]
